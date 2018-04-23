@@ -22,10 +22,13 @@ namespace gatekeeper
                 var mat = vc.RetrieveMat();
 
                 var faces = imageRecognizer.DetectFaces(mat);
-                foreach (var face in faces)
+                if (faces != null)
                 {
-                    var faceCrop = new Mat(mat, face);
-                    faceCrop.SaveImage($"./results/{Guid.NewGuid()}.jpg");
+                    foreach (var face in faces)
+                    {
+                        var faceCrop = new Mat(mat, face);
+                        faceCrop.SaveImage($"./results/{Guid.NewGuid()}.jpg");
+                    }
                 }
                 Thread.Sleep(300);
             }

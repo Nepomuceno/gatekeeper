@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OpenCvSharp;
 
 
@@ -21,8 +22,13 @@ namespace gatekeeper
             var greyMat = source.CvtColor(ColorConversionCodes.BGR2GRAY);
             var frontalRectangles = _frontalFace.DetectMultiScale(greyMat);
             var profileRectangles = _profileClassifier.DetectMultiScale(greyMat);
-            Rect[] result = null;
+            List<Rect> result = null;
             if(frontalRectangles != null && frontalRectangles.Length > 0)
+            {
+                result.AddRange(frontalRectangles);
+            } else {
+                result.AddRange(profileRectangles);
+            }
             foreach (var profile in profileRectangles)
             {
                 source.Rectangle(profile.Location, profile.BottomRight, Scalar.Blue, 3);
@@ -35,7 +41,7 @@ namespace gatekeeper
                 Console.Write("Found Frontal: ");
                 Console.WriteLine(frontal);
             }
-            return result;
+            return result.ToArray();
         }
         public void DetectIdentity()
         {
