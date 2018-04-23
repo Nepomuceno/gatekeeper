@@ -22,7 +22,7 @@ namespace gatekeeper
             var greyMat = source.CvtColor(ColorConversionCodes.BGR2GRAY);
             var frontalRectangles = _frontalFace.DetectMultiScale(greyMat);
             var profileRectangles = _profileClassifier.DetectMultiScale(greyMat);
-            List<Rect> result = null;
+            List<Rect> result = new List<Rect>();
             if(frontalRectangles != null && frontalRectangles.Length > 0)
             {
                 result.AddRange(frontalRectangles);
