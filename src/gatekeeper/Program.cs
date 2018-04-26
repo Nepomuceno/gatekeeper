@@ -2,8 +2,6 @@
 using System.Threading;
 using OpenCvSharp;
 
-
-
 namespace gatekeeper
 {
     class Program
@@ -12,7 +10,7 @@ namespace gatekeeper
         {
 
             var vc = new OpenCvSharp.VideoCapture();
-            vc.Open(0);
+            vc.Open(1);
             ImageRecognizer imageRecognizer = new ImageRecognizer();
 
 
@@ -24,6 +22,8 @@ namespace gatekeeper
                 var faces = imageRecognizer.DetectFaces(mat);
                 if (faces != null)
                 {
+                    if(faces.Length > 0)
+                        imageRecognizer.DetectIdentity(mat);
                     foreach (var face in faces)
                     {
                         var faceCrop = new Mat(mat, face);

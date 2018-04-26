@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Configuration;
+using System.Configuration.Assemblies;
 using OpenCvSharp;
-
-
+using System.IO;
 
 namespace gatekeeper
 {
@@ -10,6 +13,12 @@ namespace gatekeeper
     {
         CascadeClassifier _profileClassifier;
         CascadeClassifier _frontalFace;
+        String Endpoint = ConfigurationManager.AppSettings["FaceApiEndpoint"];
+        String Key = ConfigurationManager.AppSettings["FaceApiKey"];
+
+        SmsSender smsSender = new SmsSender();
+
+        
         public ImageRecognizer()
         {
             _profileClassifier = new OpenCvSharp.CascadeClassifier();
@@ -31,20 +40,43 @@ namespace gatekeeper
             }
             foreach (var profile in profileRectangles)
             {
-                source.Rectangle(profile.Location, profile.BottomRight, Scalar.Blue, 3);
+                // source.Rectangle(profile.Location, profile.BottomRight, Scalar.Blue, 3);
                 Console.Write("Found Profile: ");
                 Console.WriteLine(profile);
             }
             foreach (var frontal in frontalRectangles)
             {
-                source.Rectangle(frontal.Location, frontal.BottomRight, Scalar.Gold, 3);
+                // source.Rectangle(frontal.Location, frontal.BottomRight, Scalar.Gold, 3);
                 Console.Write("Found Frontal: ");
                 Console.WriteLine(frontal);
             }
             return result.ToArray();
         }
-        public void DetectIdentity()
+
+
+        public async void DetectIdentity(Mat source)
         {
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Key);
+            string requestParameters = "returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
+            string uri = Endpoint + "?" + requestParameters;
+            HttpResponseMessage response; 
+            var bytes = source.ToBytes();
+
+            using (ByteArrayContent content = new ByteArrayContent(bytes))
+            {
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                response = await client.PostAsync(uri, content);
+
+                string contentString = await response.Content.ReadAsStringAsync();
+
+                smsSender.SendSms(contentString);
+
+                Console.WriteLine(contentString);
+                
+            }
 
         }
     }
