@@ -23,12 +23,13 @@ namespace gatekeeper
 
         SmsSender smsSender = new SmsSender();
 
-        
+
         Net _net;
         bool _debug;
         StringBuilder sb;
         public ImageRecognizer(bool debug = false)
         {
+
             _net = Net.ReadNetFromCaffe("./models/dnn/face/deploy.prototxt", "./models/dnn/face/res10_300x300_ssd_iter_140000.caffemodel");
             sb = new StringBuilder();
             _debug = debug;
@@ -37,8 +38,8 @@ namespace gatekeeper
             _profileClassifier.Load(".\\models\\haarcascade_profileface.xml");
             _frontalFace = new OpenCvSharp.CascadeClassifier();
             _frontalFace.Load(".\\models\\haarcascade_frontalface_alt2.xml");
-        }
 
+        }
         public int Train(Mat source, int id = 0, string name = "")
         {
             int label = 0;
@@ -51,7 +52,7 @@ namespace gatekeeper
                     Console.WriteLine($"predict {label} with confidence {confidence}");
                 }
             }
-            if (confidence > 60)
+            if (confidence > .5)
             {
                 if (_debug)
                 {
@@ -118,21 +119,16 @@ namespace gatekeeper
                     if (_debug)
                     {
                         Console.WriteLine($"Found: ({startx},{starty}) / ({endx},{endy})");
-                        source.Rectangle(new Point(startx, starty), new Point(endx, endy), Scalar.BlueViolet, 3);
+                        source.Rectangle(new Point(startx, starty), new Point(endx, endy), Scalar.Azure, 3);
                     }
-                    if(startx > 0 && starty > 0 && endx > 0 && endy > 0)
+                    if (startx > 0 && starty > 0 && endx > 0 && endy > 0)
                         yield return new Rect(startx, starty, endx - startx, endy - starty);
                 }
             }
-
-
-
             //var frontalRectangles = _frontalFace.DetectMultiScale(greyMat,1.02,12);
             //var profileRectangles = _profileClassifier.DetectMultiScale(greyMat);
 
         }
-
-
         public async void DetectIdentity(Mat source)
         {
             HttpClient client = new HttpClient();
@@ -140,7 +136,7 @@ namespace gatekeeper
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Key);
             string requestParameters = "returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
             string uri = Endpoint + "?" + requestParameters;
-            HttpResponseMessage response; 
+            HttpResponseMessage response;
             var bytes = source.ToBytes();
 
             using (ByteArrayContent content = new ByteArrayContent(bytes))
@@ -154,7 +150,7 @@ namespace gatekeeper
                 smsSender.SendSms(contentString);
 
                 Console.WriteLine(contentString);
-                
+
             }
 
         }

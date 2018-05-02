@@ -11,7 +11,10 @@ namespace gatekeeper
             //var vc = new OpenCvSharp.VideoCapture("./test/india.mp4");
             //var vc = new OpenCvSharp.VideoCapture("./test/Test.mov");
             //var vc = new OpenCvSharp.VideoCapture("./test/singleTest.m4v");
-            var vc = new OpenCvSharp.VideoCapture("./test/peopleTest.m4v");
+        
+            //var vc = new OpenCvSharp.VideoCapture("./test/peopleTest.m4v");
+            var vc = new OpenCvSharp.VideoCapture();
+            vc.Open(0);
             ImageRecognizer imageRecognizer = new ImageRecognizer(System.Diagnostics.Debugger.IsAttached);
             int key = int.MinValue;
             
