@@ -17,7 +17,7 @@ namespace gatekeeper {
             TwilioClient.Init (AccountSid, AuthToken);
 
             var message = MessageResource.Create (
-                to : new PhoneNumber ("+447878654221"),
+                to : new PhoneNumber ("+YourNumberHere"),
                 from : new PhoneNumber ("+447481339747"),
                 body : "Test");
 
