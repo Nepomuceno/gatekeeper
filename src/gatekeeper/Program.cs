@@ -14,8 +14,8 @@ namespace gatekeeper
         
             //var vc = new OpenCvSharp.VideoCapture("./test/peopleTest.m4v");
             var vc = new OpenCvSharp.VideoCapture();
-            vc.Open(0);
-            ImageRecognizer imageRecognizer = new ImageRecognizer(System.Diagnostics.Debugger.IsAttached);
+            vc.Open(1);
+            ImageRecognizer imageRecognizer = new ImageRecognizer();
             int key = int.MinValue;
             
             using (Window window = new Window("capture"))
